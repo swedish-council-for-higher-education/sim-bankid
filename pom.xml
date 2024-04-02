@@ -14,9 +14,6 @@
         <quarkus.version>3.9.1</quarkus.version>
         <version.mockito>5.3.1</version.mockito>
         <version.assertj>3.25.3</version.assertj>
-
-        <docker.tag>latest</docker.tag>
-        <docker.labels>{}</docker.labels>
     </properties>
 
     <dependencyManagement>
@@ -108,40 +105,6 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
-            </plugin>
-
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.43.4</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>build</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>sim-bankid:${docker.tag}</name>
-                            <build>
-                                <contextDir>${project.basedir}</contextDir>
-                                <buildOptions>
-                                    <labels>${docker.labels}</labels>
-                                </buildOptions>
-                            </build>
-                        </image>
-                    </images>
-                </configuration>
             </plugin>
 
             <plugin>

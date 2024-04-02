@@ -1,19 +1,31 @@
-FROM registry.access.redhat.com/ubi9/openjdk-21-runtime@sha256:84175e911f3bac8bb51f113cc9704e95d1d7ce6348a49ee217501cc1d2df2699
+FROM docker.io/eclipse-temurin:21-jdk-alpine@sha256:b5d37df8ee5bb964bb340acca83957f9a09291d07768fba1881f6bfc8048e4f5 AS build
 
 USER root
 
+RUN mkdir /var/sim-bankid
+
+COPY . /var/sim-bankid
+
+WORKDIR /var/sim-bankid
+
+RUN chmod +x mvnw
+
+RUN ./mvnw -B --file pom.xml package
+
+FROM eclipse-temurin:21.0.2_13-jre-alpine@sha256:efdec7ae2b3e60bb253cdbe046249ddc07f3f0056837658616a94097f22a7449
+
 ENV TZ=Europe/Stockholm HOME=/opt/sim-bankid LANG=C.utf8
 
-RUN groupadd --system --gid=1000 sim-bankid && \
-    useradd --system --no-log-init --gid sim-bankid --uid=1000 sim-bankid && \
+RUN addgroup -S -g 1000 sim-bankid && \
+    adduser -D -H -G sim-bankid -u 1000 sim-bankid && \
     mkdir /var/sim-bankid && chown sim-bankid:sim-bankid /var/sim-bankid && \
     mkdir /opt/sim-bankid && chown sim-bankid:sim-bankid /opt/sim-bankid
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=sim-bankid:sim-bankid target/quarkus-app/lib/ /opt/sim-bankid/lib/
-COPY --chown=sim-bankid:sim-bankid target/quarkus-app/*.jar /opt/sim-bankid/
-COPY --chown=sim-bankid:sim-bankid target/quarkus-app/app/ /opt/sim-bankid/app/
-COPY --chown=sim-bankid:sim-bankid target/quarkus-app/quarkus/ /opt/sim-bankid/quarkus/
+COPY --chown=sim-bankid:sim-bankid --from=build var/sim-bankid/target/quarkus-app/lib/ /opt/sim-bankid/lib/
+COPY --chown=sim-bankid:sim-bankid --from=build var/sim-bankid/target/quarkus-app/*.jar /opt/sim-bankid/
+COPY --chown=sim-bankid:sim-bankid --from=build var/sim-bankid/target/quarkus-app/app/ /opt/sim-bankid/app/
+COPY --chown=sim-bankid:sim-bankid --from=build var/sim-bankid/target/quarkus-app/quarkus/ /opt/sim-bankid/quarkus/
 
 USER sim-bankid
 
