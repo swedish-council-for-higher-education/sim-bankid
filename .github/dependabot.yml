@@ -9,6 +9,3 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-ignore:
-   - dependency-name: "sonar-plugin-api"
-     update-types: ["version-update:semver-major", "version-update:semver-minor"]
