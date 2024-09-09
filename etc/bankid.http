@@ -1,26 +1,48 @@
 @url = http://localhost:8080
 
+## Admin ##
 
-### First Auth
+### Load personal numbers ###
+POST {{url}}/admin/pnr
+Content-Type: multipart/form-data; boundary=----boundary
+
+personal-numbers.json
+------boundary
+Content-Disposition: form-data; name="file"; filename="personal-numbers.json"
+Content-Type: application/octet-stream; charset=utf-8
+
+< ./personal-numbers.json
+------boundary--
+
+
+### get next pnr (for testing) ####
+GET {{url}}/admin/pnr
+
+
+### clear ####
+DELETE {{url}}/admin/pnr
+
+### Metrics ###
+GET {{url}}/q/metrics
+Accept: text/plain
+
+
+### Health ###
+GET {{url}}/q/health HTTP/1.1
+
+## Bank Id ##
+
+### Auth ###
 # @name auth
 POST {{url}}/rp/v6.0/auth HTTP/1.1
 Content-Type: application/json
 
 
-### Then Collect until status = complete
+### Then Collect until status = complete ###
 POST {{url}}/rp/v6.0/collect HTTP/1.1
 Content-Type: application/json
 
 {
   "orderRef":"{{auth.response.body.orderRef}}"
 }
-
-
-### Metrics
-GET {{url}}/q/metrics
-Accept: text/plain
-
-
-### Health
-GET {{url}}/q/health HTTP/1.1
 
