@@ -21,7 +21,7 @@ import io.micrometer.core.annotation.Counted;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import se.uhr.sim.bankid.boundary.State.Status;
 import se.uhr.sim.bankid.control.Config;
-import se.uhr.sim.bankid.control.PersonalNumbers;
+import se.uhr.sim.bankid.control.PersonalNumberRepository;
 
 @Path("/rp/v6.0")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,9 +36,12 @@ public class BankIdResource {
 
 	private final Config config;
 
+	private final PersonalNumberRepository pnr;
+
 	@Inject
-	BankIdResource(Config config) {
+	BankIdResource(Config config, PersonalNumberRepository pnr) {
 		this.config = config;
+		this.pnr = pnr;
 	}
 
 	@Counted(value = "bankid.auth.calls")
@@ -66,14 +69,17 @@ public class BankIdResource {
 			throw new WebApplicationException(400);
 		}
 
+		if (pnr.isEmpty()) {
+			throw new WebApplicationException("No personal numbers loaded", 409);
+		}
+
 		Thread.sleep(config.delay());
 
 		return switch (state.status()) {
 			case INITIAL -> {
 				STATUS_MAP.computeIfPresent(collectRequest.orderRef(),
-						(k, v) -> v.initCount().intValue() < config.iterations()
-								? new State(Status.INITIAL, new AtomicInteger(v.initCount().incrementAndGet()))
-								: new State(Status.OUTSTANDING_TRANSACTION));
+						(k, v) -> v.initCount().intValue() < config.iterations() ? new State(Status.INITIAL,
+								new AtomicInteger(v.initCount().incrementAndGet())) : new State(Status.OUTSTANDING_TRANSACTION));
 
 				yield new CollectRequestRepresentation(collectRequest.orderRef(), PENDING, "outstandingTransaction", null);
 			}
@@ -87,8 +93,9 @@ public class BankIdResource {
 			}
 			case USER_SIGN -> {
 				STATUS_MAP.remove(collectRequest.orderRef());
-				yield new CollectRequestRepresentation(collectRequest.orderRef(), "complete", null, new CompletionDataRepresenation(
-						new User(PersonalNumbers.randomPerson(), "John Doe", "John", "Doe"), new Device("192.168.0.1"), "2020-02-01"));
+				yield new CollectRequestRepresentation(collectRequest.orderRef(), "complete", null,
+						new CompletionDataRepresenation(new User(pnr.nextPerson(), "John Doe", "John", "Doe"),
+								new Device("192.168.0.1"), "2020-02-01"));
 			}
 		};
 	}
