@@ -1,4 +1,4 @@
-FROM docker.io/eclipse-temurin:21-jdk-alpine@sha256:c4e39b956750b52fdf49c93d51a63546a5e91b22224fc462e58b00be91b17b62 AS build
+FROM docker.io/eclipse-temurin:21-jdk-alpine@sha256:56ffb38891c7ea074c1dd42cc9a978206b7c2752589f8f613e383050a8af0e50 AS build
 
 USER root
 
@@ -12,7 +12,7 @@ RUN chmod +x mvnw
 
 RUN ./mvnw -B --file pom.xml package
 
-FROM eclipse-temurin:23.0.1_11-jre-alpine@sha256:5aa334404315c590f8262d1bdb1fa855c127aa219df30bad4ea35d553de58d2f
+FROM eclipse-temurin:23.0.1_11-jre-alpine@sha256:bd8e2c8c19bcadbaa8c6a128051a22384c6f7cfe5fa520cb663fe21fff96f084
 
 ENV TZ=Europe/Stockholm HOME=/opt/sim-bankid LANG=C.utf8
 
