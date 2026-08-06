@@ -1,4 +1,4 @@
-FROM docker.io/eclipse-temurin:25-jdk-alpine@sha256:da683f4f02f9427597d8fa162b73b8222fe08596dcebaf23e4399576ff8b037e AS build
+FROM docker.io/eclipse-temurin:25-jdk-alpine@sha256:5ecfde8e5ecde5954ea3721155b345ef56c1d579b940c761318ad4c05959a151 AS build
 
 USER root
 
