@@ -11,7 +11,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
 
-        <quarkus.version>3.38.0</quarkus.version>
+        <quarkus.version>3.39.1</quarkus.version>
         <version.mockito>5.3.1</version.mockito>
         <version.assertj>3.27.7</version.assertj>
     </properties>
@@ -94,7 +94,7 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
+                <version>3.16.0</version>
             </plugin>
 
             <plugin>
@@ -110,7 +110,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.9.0</version>
+                <version>3.10.1</version>
                 <configuration>
                     <formats>
                         <format>
