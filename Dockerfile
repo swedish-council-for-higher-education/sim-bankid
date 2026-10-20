@@ -10,7 +10,7 @@ WORKDIR /var/sim-bankid
 
 RUN chmod +x mvnw
 
-RUN ./mvnw -B --file pom.xml package
+RUN ./mvnw -B --file pom.xml package -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.http.retryHandler.requestSentRetryEnabled=true
 
 FROM eclipse-temurin:24.0.2_12-jre-alpine@sha256:4044b6c87cb088885bcd0220f7dc7a8a4aab76577605fa471945d2e98270741f
 
